@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart','gauge','line','imagelinechart']}]}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<style>
+body{ background-color: #0067B3  ; font-family: Arial, Helvetica, Sans-Serif }
+.col-md-8{background-color: #fff}
+</style>
+</head>
+<title>
+Thing Speak Chart
+</title>
+<body>
+<div class="container" >
+<center>
+<h1 style="color:#FFFFFF; 
+	font-family:verdana;
+	padding-top: 25px;
+    padding-bottom: 25px;
+	font-weight:bold;
+    font-size: 36px">Sensor Analytics</h1>
+</center>
+<div class="row">
+<div class= "col-md-8" id="graph1">
+<div id="chart_div"></div>
+<script>
+var data, chart;
+var channel_id = 728991;
+var api_key = 'PV8TTYNRTZB1X9SB';
+var cnt = 0;
+var points = 14;
+var got = 0;
+var opt = {
+    hAxis: {
+        title:'Time'
+    },
+    vAxis: {
+        title:'Vibration(g)'
+    }
+};
+var opt1 = {
+    hAxis: {
+        title:'Time'
+    },
+    vAxis: {
+        title:'Temperature'
+    }
+};
+function settingForm(){
+//var senseValue  = document.getElementById("sensor_id").value;
+//console.log(senseValue);
+//if(senseValue == "vibSense"){
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(draw)
+//document.getElementById('graph1').append(google.charts.setOnLoadCallback(draw));
+setInterval(update, 6000); 
+//}
+}
+function draw(){
+    data = new google.visualization.DataTable();
+    chart = new google.visualization.AreaChart(document.getElementById('chart_div'));  
+  //chart = new google.visualization.LineChart(document.getElementById('htchart'));
+   
+var senseValue  = document.getElementById("sensor_id").value;
+console.log(senseValue);
+if(senseValue == "vibSense"){	
+	data.addColumn('string','Time');
+    data.addColumn('number','RMSX');
+    data.addColumn('number','RMSY');
+    data.addRows([
+        [' ', 0, 0]  
+    ]);
+    }
+	else if(senseValue == "tempSense"){
+	data.addColumn('string','Time');
+    data.addColumn('number','TempC');
+    data.addColumn('number','TempF');
+    data.addRows([
+        [' ', 0, 0]  
+    ]);
+    chart.draw(data, opt1);}  
+}
+
+function update() {
+    if(got == 0){
+        got = 1;
+        var senseValue  = document.getElementById("sensor_id").value;
+		console.log(senseValue);
+
+		$.get('https://api.thingspeak.com/channels/' + channel_id + '/feed/last.json?api_key=' + api_key, function(field,s){
+            cnt ++
+	        var cur = new Date();
+			var rmsx = parseInt(field.field1)/100;
+			var rmsy = parseInt(field.field2)/100;
+			var tempC = parseInt(field.field3);
+			var tempF = (5/9 * tempC) + 32; 
+			document.getElementById("rmsxtxt").value = field.field1;
+			document.getElementById("rmsytxt").value = field.field2;
+			document.getElementById("tempCtxt").value = field.field3;
+			document.getElementById("tempFtxt").value = tempF.toString();
+            if(senseValue == "vibSense"){	            
+			data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), rmsx, rmsy]]);
+			}else if(senseValue == "tempSense"){
+			data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), tempC, tempF]]);
+			}
+		    if(cnt == points){
+                for (i = 0; i < points/2; i++) {
+                    data.removeRow(i);
+                }
+                cnt = i;
+            }
+            got = 0;
+            chart.draw(data, opt);
+			});			
+}
+else{
+        got ++;
+        if(got == points/3){
+           got = 0;        
+        }
+    }
+}       
+</script>
+</div>
+
+ <div class="col-md-4"> 
+ <h1 style="color:#FFFFFF; font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+    padding-bottom: 10px;
+	text-align: center;
+    font-size: 20px">Sensor Configure</h1>
+  <h3 style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+    padding-bottom: 10px;
+	padding-left:10px;
+	text-align: left;
+    font-size: 18px">Select Sensor</h3>
+	<select name="sensor_list" id="sensor_id" style="border=2px;  padding: 5px 10px; display: inline-block;  border: 1px solid #ccc; border-radius: 4px;box-sizing: border-box;">
+	   <option value="tempSense">Temperature and Humidity Sensor</option>
+	   <option value="vibSense">Vibration and Temperature Sensor</option>
+	   <option value="preSense">Pressure Sensor</option>
+	   <option value="">Accelerometer and Gyroscope Sensor</option>
+	</select>
+	<h3 style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+    padding-bottom: 10px;
+	padding-left:10px;
+	text-align: left;
+    font-size: 18px">* Create Event</h3>	
+	<div id="radio_select" style="color:white" >
+		<input type="radio" name="configure" value="msg" id="radio_msg" style="color:blue" > Create Message Event &nbsp&nbsp
+		<input type="radio" name="configure" value="email" id="radio_email" style="color:blue"> Create Email Event<br>
+	</div>
+	<h3 style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+    padding-bottom: 10px;
+	padding-left:10px;
+	text-align: left;
+    font-size: 18px">* Sensor Values</h3>	
+	<h4 style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+	align:left;
+    padding-bottom: 10px;
+	padding-left:10px;
+	font-size: 14px">Vibration Analysis</h3>
+    <div class="row">
+    <div class="col-md-3">
+	<h6	style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+	align:left;
+    padding-bottom: 10px;
+	padding-left:10px;">RMS X</h6>
+	</div>
+	<div class="col-md-3">
+	<input maxlength="30px" type='text' autocomplete = "off" name="rmsxtxt" id="rmsxtxt" style="width: 60px; padding: 5px 10px ; margin: 5px 0; border : 2px solid #3498db; border-radius: 4px; box-sizing:border-box">
+	</div>
+	<div class="col-md-3">
+	<h6	style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+	align:left;
+    padding-bottom: 10px;
+	padding-left:10px">RMS Y</h6>
+	</div>
+	<div class="col-md-3">
+	<input maxlength="30px" type='text' name="rmsytxt" autocomplete = "off" id="rmsytxt" style="width: 60px; padding: 5px 10px ; margin: 5px 0; border : 2px solid #3498db; border-radius: 4px; box-sizing:border-box">
+	</div>
+	</div>
+  <div class="row">
+    <div class="col-md-3">
+	<h6	style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+	align:left;
+    padding-bottom: 10px;
+	padding-left:10px;">TempF</h6>
+	</div>
+	<div class="col-md-3">
+	<input maxlength="30px" type='text' name="tempFtxt" id="tempFtxt" autocomplete = "off" style="width: 60px; padding: 5px 10px ; margin: 5px 0; border : 2px solid #3498db; border-radius: 4px; box-sizing:border-box">
+	</div>
+	<div class="col-md-3">
+	<h6	style="color:#FFFFFF; 
+	font-family:verdana;font-family: verdana;
+    padding-top: 10px;
+	align:left;
+    padding-bottom: 10px;
+	padding-left:10px">TempC</h6>
+	</div>
+	<div class="col-md-3">
+	<input maxlength="30px" type='text' name="tempCtxt" id="tempCtxt" autocomplete = "off" style="width: 60px; padding: 5px 10px ; margin: 5px 0; border : 2px solid #3498db; border-radius: 4px; box-sizing:border-box">
+	</div>
+	</div>
+	<INPUT type="submit"  onClick="return settingForm()"> 
+<style>
+input[type="submit"]{
+    background-color: #3498DB; /* Green */
+    border: none;
+    color: white;
+	padding:10px 48px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+}
+</style>
+ </div>
+</div>
+</div>
+</body> 
+</html>
