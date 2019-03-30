@@ -5,6 +5,7 @@ In our firmware we are loading this webpage from SPIFFS and streaming it on loca
 
 * First of all open the local WiFi IP in your Webbrowser.
 * Second step is to Select the sensor as an example here we have selected Temperature and Humidity Sensor.
+* In the third Step select the Event to e triggered we are using IFTTT for email notification and messages
 
 ![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/gChartSense.png)
 
