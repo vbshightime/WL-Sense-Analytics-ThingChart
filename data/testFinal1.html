@@ -50,6 +50,44 @@ var opt1 = {
         title:'Temperature'
     }
 };
+var time_min = 0;
+
+//var http = require('http');
+//var url = require('url');
+
+
+function triggerIftttMakerWebhook(event, key, val1, val2, val3) {
+  //var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/${event}/with/key/${key}';
+  var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/'+event+'/with/key/'+ key;
+  var dataToSend={ value1 : String(val1) , value2 : String(val2), value3 : String(val3) }
+  var postData = JSON.stringify(dataToSend);
+  console.log(postData);
+  $.post(iftttNotificationUrl, postData)
+  
+  //var parsedUrl = url.parse(iftttNotificationUrl);
+  /*var post_options = {
+      hostname: parsedUrl.hostname,
+      port: parsedUrl.port,
+      path: parsedUrl.path,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': postData.length
+      }
+  };
+
+  // Set up the request
+  var post_req = http.request(post_options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        console.log('Response: ' + chunk);
+      });
+  });
+
+  // Trigger a POST to the url with the body.
+  post_req.write(postData);
+  post_req.end();
+}*/}
 function settingForm(){
 //var senseValue  = document.getElementById("sensor_id").value;
 //console.log(senseValue);
@@ -84,13 +122,13 @@ if(senseValue == "vibSense"){
     ]);
     chart.draw(data, opt1);}  
 }
-
 function update() {
+var key_ifttt = 'bQnimMzQgTMJECwLbMAC2j';
+var event_ifttt = 'graph_event';
     if(got == 0){
         got = 1;
         var senseValue  = document.getElementById("sensor_id").value;
 		console.log(senseValue);
-
 		$.get('https://api.thingspeak.com/channels/' + channel_id + '/feed/last.json?api_key=' + api_key, function(field,s){
             cnt ++
 	        var cur = new Date();
@@ -102,6 +140,20 @@ function update() {
 			document.getElementById("rmsytxt").value = field.field2;
 			document.getElementById("tempCtxt").value = field.field3;
 			document.getElementById("tempFtxt").value = tempF.toString();
+			email_value = document.getElementById("radio_email").value;
+			msg_value = document.getElementById("radio_msg").value;
+			console.log(email_value);
+			if(email_value == "email"){
+			if(rmsy > 3.0){
+			//if(cur.getMinutes - trigger_time > 5){
+				//trigger_time = cur.getMinutes();
+				var condition = "needs maintainance";
+				triggerIftttMakerWebhook(event_ifttt,key_ifttt,condition,rmsx,rmsy);
+			//}
+			}
+			}else if(msg_value == "msg"){
+			 //here we have to insert msg IFTTT 
+			}
             if(senseValue == "vibSense"){	            
 			data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), rmsx, rmsy]]);
 			}else if(senseValue == "tempSense"){
