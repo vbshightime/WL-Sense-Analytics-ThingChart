@@ -6,7 +6,7 @@ In our firmware we are loading this webpage from SPIFFS and streaming it on loca
 * First of all open the local WiFi IP in your Webbrowser.
 * Second step is to Select the sensor as an example here we have selected Temperature and Humidity Sensor.
 
-![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/gChart3.png)
+![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/gChartSense.png)
 
 * Then Hit Submit button and the area chart will show up on the top left side of the webpage
 
