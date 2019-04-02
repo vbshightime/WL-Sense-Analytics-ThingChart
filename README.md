@@ -4,7 +4,7 @@ We have also made an interactive webpage using html,CSS,BootStrap and Javascript
 In our firmware we are loading this webpage from SPIFFS and streaming it on local WiFi IP. We can see it by opening local WiFi IP in web browser.
 
 * First of all open the local WiFi IP in your Webbrowser.
-* Second step is to Select the sensor as an example here we have selected Temperature and Humidity Sensor.
+* Second step is to Select the sensor as an example here we have selected Vibration and Temperature Sensor also check the Show Temperature   Graph Checkbox to Show Temperature in Celcius and Fahrenhite Area Chart.
 * In the third Step select the Event to e triggered we are using IFTTT for email notification and messages
 
 ![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/googleGraph.png)
@@ -13,7 +13,7 @@ In our firmware we are loading this webpage from SPIFFS and streaming it on loca
 
 ![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/gChart4.png)
 
-* Similarly we can do it for Wireless Vibration and Temperature Sensors. There is one column in graph which will show the temperature and     Vibration values. 
+* Similarly if we can do not need Temperature Graph Uncheck the checkbox and only vibration graph will show up.. 
 
 ![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/gChart1.png)
 
