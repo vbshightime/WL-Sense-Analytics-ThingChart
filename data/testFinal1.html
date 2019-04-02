@@ -5,34 +5,19 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart','gauge','line','imagelinechart']}]}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
 <style>
 body{ background-color: #0067B3  ; font-family: Arial, Helvetica, Sans-Serif }
-.col-md-8{background-color: #fff}
+<!--.col-md-8{background-color: #fff}-->
 </style>
-</head>
-<title>
-Thing Speak Chart
-</title>
-<body>
-<div class="container" >
-<center>
-<h1 style="color:#FFFFFF; 
-	font-family:verdana;
-	padding-top: 25px;
-    padding-bottom: 25px;
-	font-weight:bold;
-    font-size: 36px">Sensor Analytics</h1>
-</center>
-<div class="row">
-<div class= "col-md-8" id="graph1">
-<div id="chart_div"></div>
 <script>
-var data, chart;
+var data,data1;
+var chart,chart1;
+var isChecked = 0;
 var channel_id = 728991;
 var api_key = 'PV8TTYNRTZB1X9SB';
 var cnt = 0;
-var points = 14;
+var points = 12;
 var got = 0;
 var opt = {
     hAxis: {
@@ -51,11 +36,8 @@ var opt1 = {
     }
 };
 var time_min = 0;
-
 //var http = require('http');
 //var url = require('url');
-
-
 function triggerIftttMakerWebhook(event, key, val1, val2, val3) {
   //var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/${event}/with/key/${key}';
   var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/'+event+'/with/key/'+ key;
@@ -75,7 +57,6 @@ function triggerIftttMakerWebhook(event, key, val1, val2, val3) {
         'Content-Length': postData.length
       }
   };
-
   // Set up the request
   var post_req = http.request(post_options, function(res) {
       res.setEncoding('utf8');
@@ -83,7 +64,6 @@ function triggerIftttMakerWebhook(event, key, val1, val2, val3) {
         console.log('Response: ' + chunk);
       });
   });
-
   // Trigger a POST to the url with the body.
   post_req.write(postData);
   post_req.end();
@@ -92,58 +72,90 @@ function settingForm(){
 //var senseValue  = document.getElementById("sensor_id").value;
 //console.log(senseValue);
 //if(senseValue == "vibSense"){
-google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(draw)
-//document.getElementById('graph1').append(google.charts.setOnLoadCallback(draw));
-setInterval(update, 6000); 
-//}
+	google.charts.load('current', {'packages':['corechart']});
+	data = new google.visualization.DataTable();
+	chart = new google.visualization.AreaChart(document.getElementById('chart_div')); 
+	google.charts.setOnLoadCallback(drawRMSGraph);
+	//document.getElementById('graph1').append(google.charts.setOnLoadCallback(draw));
+	if(isChecked == 1){ 
+		data1 = new google.visualization.DataTable();
+		chart1 = new google.visualization.AreaChart(document.getElementById('temp_graph')); 
+		google.charts.setOnLoadCallback(drawTempGraph);
+	}
+	setInterval(update,6000);
 }
-function draw(){
-    data = new google.visualization.DataTable();
-    chart = new google.visualization.AreaChart(document.getElementById('chart_div'));  
+
+function mycheckFunction(){
+	var checkBox = document.getElementById("checkGraph");
+	console.log(checkBox.value);
+	if(checkBox.checked==true){
+		isChecked = 1;
+	}else{
+		isChecked = 0;
+	}
+}
+function drawTempGraph(){
+	//data = new google.visualization.DataTable();
+    //chart = new google.visualization.AreaChart(document.getElementById('chart_div'));  
+   // chart = new google.visualization.AreaChart(document.getElementById('graph1'));  
+  
   //chart = new google.visualization.LineChart(document.getElementById('htchart'));
    
-var senseValue  = document.getElementById("sensor_id").value;
-console.log(senseValue);
-if(senseValue == "vibSense"){	
-	data.addColumn('string','Time');
-    data.addColumn('number','RMSX');
-    data.addColumn('number','RMSY');
-    data.addRows([
-        [' ', 0, 0]  
-    ]);
-    }
-	else if(senseValue == "tempSense"){
-	data.addColumn('string','Time');
-    data.addColumn('number','TempC');
-    data.addColumn('number','TempF');
-    data.addRows([
-        [' ', 0, 0]  
-    ]);
-    chart.draw(data, opt1);}  
+	//	chart1 = new google.visualization.AreaChart(document.getElementById('temp_graph')); 
+		data1.addColumn('string','Time');
+		data1.addColumn('number','TempC');
+		data1.addColumn('number','TempF');
+		data1.addRows([
+			[' ', 0, 0]  
+		]);
+		//console.log(isChecked);
+		chart1.draw(data1, opt1);
 }
+
+function drawRMSGraph(){
+    //data1 = new google.visualization.DataTable();
+	//chart = new google.visualization.AreaChart(document.getElementById('chart_div'));  
+   // chart = new google.visualization.AreaChart(document.getElementById('graph1'));  
+  
+  //chart = new google.visualization.LineChart(document.getElementById('htchart'));
+   
+	var senseValue  = document.getElementById("sensor_id").value;
+	console.log(senseValue);
+	//	chart = new google.visualization.AreaChart(document.getElementById('chart_div')); 
+		data.addColumn('string','Time');
+		data.addColumn('number','RMSX');
+		data.addColumn('number','RMSY');
+		console.log("vibSense Selected");
+		data.addRows([
+			[' ', 0, 0]  
+		]);
+		chart.draw(data, opt);		
+	
+}
+
 function update() {
-var key_ifttt = 'bQnimMzQgTMJECwLbMAC2j';
-var event_ifttt = 'graph_event';
+	var key_ifttt = 'bQnimMzQgTMJECwLbMAC2j';
+	var event_ifttt = 'graph_event';
     if(got == 0){
         got = 1;
         var senseValue  = document.getElementById("sensor_id").value;
-		console.log(senseValue);
+		//console.log(senseValue);
 		$.get('https://api.thingspeak.com/channels/' + channel_id + '/feed/last.json?api_key=' + api_key, function(field,s){
             cnt ++
 	        var cur = new Date();
 			var rmsx = parseInt(field.field1)/100;
 			var rmsy = parseInt(field.field2)/100;
 			var tempC = parseInt(field.field3);
-			var tempF = (5/9 * tempC) + 32; 
+			var tempF = (9/5 * tempC) + 32; 
 			document.getElementById("rmsxtxt").value = field.field1;
 			document.getElementById("rmsytxt").value = field.field2;
 			document.getElementById("tempCtxt").value = field.field3;
 			document.getElementById("tempFtxt").value = tempF.toString();
-			email_value = document.getElementById("radio_email").value;
+			email_value = document.getElementById("radio_email");
 			msg_value = document.getElementById("radio_msg").value;
-			console.log(email_value);
-			if(email_value == "email"){
+			
+			if(email_value.checked == true){
+				console.log("email check");
 			if(rmsy > 3.0){
 			//if(cur.getMinutes - trigger_time > 5){
 				//trigger_time = cur.getMinutes();
@@ -151,22 +163,27 @@ var event_ifttt = 'graph_event';
 				triggerIftttMakerWebhook(event_ifttt,key_ifttt,condition,rmsx,rmsy);
 			//}
 			}
-			}else if(msg_value == "msg"){
+			}else if(msg_value.checked == true){
 			 //here we have to insert msg IFTTT 
 			}
-            if(senseValue == "vibSense"){	            
-			data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), rmsx, rmsy]]);
-			}else if(senseValue == "tempSense"){
-			data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), tempC, tempF]]);
+            data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), rmsx, rmsy]]);
+			if(isChecked==1){
+				data1.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), tempC, tempF]]);
 			}
-		    if(cnt == points){
+			//console.log("vibSense Selected");
+			 if(cnt == points){
                 for (i = 0; i < points/2; i++) {
                     data.removeRow(i);
+					if(isChecked==1){
+					data1.removeRow(i);}
                 }
                 cnt = i;
             }
             got = 0;
-            chart.draw(data, opt);
+			chart.draw(data, opt);
+			if(isChecked==1){
+				chart1.draw(data1,opt1);
+			}
 			});			
 }
 else{
@@ -177,6 +194,33 @@ else{
     }
 }       
 </script>
+</head>
+<title>
+Thing Speak Chart
+</title>
+<body>
+<div class="container" >
+<center>
+<h1 style="color:#FFFFFF; 
+	font-family:verdana;
+	padding-top: 25px;
+    padding-bottom: 25px;
+	font-weight:bold;
+    font-size: 36px">Sensor Analytics</h1>
+</center>
+<div class="row">
+<div class= "col-md-8">
+<br>
+<div id="chart_div"></div>
+<br>
+<div id="temp_graph"></div>
+<br>
+<!--<h1 style="color:#FFFFFF; 
+	font-family:verdana;
+	padding-top: 25px;
+    padding-bottom: 25px;
+	font-weight:bold;
+    font-size: 22px">Sensor Analytics</h1>-->
 </div>
 
  <div class="col-md-4"> 
@@ -198,6 +242,10 @@ else{
 	   <option value="preSense">Pressure Sensor</option>
 	   <option value="">Accelerometer and Gyroscope Sensor</option>
 	</select>
+	<br>
+    <div id="check" style="color:white">
+	  <INPUT type="checkbox" id="checkGraph" style="padding-top:2px" value="Checked" onClick="mycheckFunction()">&nbsp Select Temperature graph
+	</div>
 	<h3 style="color:#FFFFFF; 
 	font-family:verdana;font-family: verdana;
     padding-top: 10px;
@@ -206,8 +254,8 @@ else{
 	text-align: left;
     font-size: 18px">* Create Event</h3>	
 	<div id="radio_select" style="color:white" >
-		<input type="radio" name="configure" value="msg" id="radio_msg" style="color:blue" > Create Message Event &nbsp&nbsp
-		<input type="radio" name="configure" value="email" id="radio_email" style="color:blue"> Create Email Event<br>
+		<input type="radio" name="configure" value="msg" id="radio_msg" style="color:blue;" > Create Message Event &nbsp&nbsp
+		<input type="radio" name="configure" value="email" id="radio_email" style="color:blue;"> Create Email Event<br>
 	</div>
 	<h3 style="color:#FFFFFF; 
 	font-family:verdana;font-family: verdana;
@@ -216,7 +264,7 @@ else{
 	padding-left:10px;
 	text-align: left;
     font-size: 18px">* Sensor Values</h3>	
-	<h4 style="color:#FFFFFF; 
+	<h3 style="color:#FFFFFF; 
 	font-family:verdana;font-family: verdana;
     padding-top: 10px;
 	align:left;
@@ -288,4 +336,5 @@ input[type="submit"]{
 </div>
 </div>
 </body> 
+</html>
 </html>
