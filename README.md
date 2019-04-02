@@ -7,7 +7,7 @@ In our firmware we are loading this webpage from SPIFFS and streaming it on loca
 * Second step is to Select the sensor as an example here we have selected Temperature and Humidity Sensor.
 * In the third Step select the Event to e triggered we are using IFTTT for email notification and messages
 
-![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/gChartSense.png)
+![gChart1](https://github.com/ncdcommunity/WL-Sense-Analytics-ThingChart/blob/master/googleGraph.png)
 
 * Then Hit Submit button and the area chart will show up on the top left side of the webpage
 
