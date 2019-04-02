@@ -5,6 +5,7 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart','gauge','line','imagelinechart']}]}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="js/xdomain.min.js" slave="https://crossdomain_server/proxy.html"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
 <style>
 body{ background-color: #0067B3  ; font-family: Arial, Helvetica, Sans-Serif }
@@ -40,11 +41,23 @@ var time_min = 0;
 //var url = require('url');
 function triggerIftttMakerWebhook(event, key, val1, val2, val3) {
   //var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/${event}/with/key/${key}';
-  var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/'+event+'/with/key/'+ key;
-  var dataToSend={ value1 : String(val1) , value2 : String(val2), value3 : String(val3) }
-  var postData = JSON.stringify(dataToSend);
-  console.log(postData);
-  $.post(iftttNotificationUrl, postData)
+ 
+		var dataToSend={ value1 : String(val1) , value2 : String(val2), value3 : String(val3) }
+		var postData = JSON.stringify(dataToSend);
+		console.log(postData);
+		var iftttNotificationUrl = 'https://maker.ifttt.com/trigger/'+event+'/with/key/'+ key;
+		var http_request = new XMLhttpRequest(),method="POST",url=iftttNotificationUrl;
+		http_request.open(method,url,true);
+		http_request.onreadystatechange = function () {
+		if(http_request.readyState === 4 && xhr.status === 200) {
+		console.log(http_request.responseText);
+		}else{
+		console.log("Failed");}
+	};
+ http_request.setRequestHeader("content-type","application/json");
+ http_request.send(postData);
+ 
+  //$.post(iftttNotificationUrl, postData)
   
   //var parsedUrl = url.parse(iftttNotificationUrl);
   /*var post_options = {
@@ -162,9 +175,10 @@ function update() {
 				var condition = "needs maintainance";
 				triggerIftttMakerWebhook(event_ifttt,key_ifttt,condition,rmsx,rmsy);
 			//}
-			}
+			//}
 			}else if(msg_value.checked == true){
 			 //here we have to insert msg IFTTT 
+			}
 			}
             data.addRows([[cur.getMinutes() + ":" + cur.getSeconds(), rmsx, rmsy]]);
 			if(isChecked==1){
